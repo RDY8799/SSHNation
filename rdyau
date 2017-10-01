@@ -11,16 +11,16 @@ fi
 
 if [ $(id -u) -eq 0 ]
 then
-read -p "RDY" user
+read -p "RDY user: " user
 if cat /etc/passwd |grep $user: |grep -vi [a-z]$user |grep -v [0-9]$user > /dev/null
 	then
 clear
 echo "ERRO 03 (RDY): Usuario $user ja existe, crie outro usuario.";
 exit
 else
-read -p "RDY"  password
-read -p "RDY"  days
-read -p "RDY"  logins
+read -p "RDY pass: "  password
+read -p "RDY days: "  days
+read -p "RDY limit: "  logins
 clear
 rdyw=$(date '+%C%y-%m-%d' -d " +$days days")
 rdyx=$(date "+%d/%m/%Y" -d "+ $days days")

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-read -p "RDY" user
+read -p "RDY user: " user
 if cat /etc/passwd |grep $user: > /dev/null
 then
 userdel --force $user > /dev/null 2>/dev/null
