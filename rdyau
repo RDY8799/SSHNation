@@ -39,7 +39,6 @@ echo "Valid.: [ $rdyx ]";
 echo "$password" > /etc/tomada/senha/$user
 echo "$rdyw" > /etc/tomada/rdy_date/$user
 history -c
-clear
 exit
 fi
 else
