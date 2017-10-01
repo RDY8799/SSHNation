@@ -1,0 +1,51 @@
+#!/bin/bash
+clear
+# RDY SOFTWARE
+
+if [ -d /etc/tomada/rdy_date ]
+then
+echo ""
+else
+mkdir /etc/tomada/rdy_date
+fi
+
+if [ $(id -u) -eq 0 ]
+then
+read -p "RDY" user
+if cat /etc/passwd |grep $user: |grep -vi [a-z]$user |grep -v [0-9]$user > /dev/null
+	then
+clear
+echo "ERRO 03 (RDY): Usuario $user ja existe, crie outro usuario.";
+exit
+else
+read -p "RDY"  password
+read -p "RDY"  days
+read -p "RDY"  logins
+clear
+rdyw=$(date '+%C%y-%m-%d' -d " +$days days")
+rdyx=$(date "+%d/%m/%Y" -d "+ $days days")
+useradd -M -s /bin/false $user -e $rdyw
+		(echo $password; echo $password)|passwd $user 2>/dev/null
+limit $user $logins 2>/dev/null
+history -c
+clear
+
+echo "CRIADO!";
+echo "User: [ $user ]";
+echo "";
+echo "Pass: [ $password ]";
+echo "";
+echo "Valid.: [ $rdyx ]";
+echo "$password" > /etc/tomada/senha/$user
+echo "$rdyw" > /etc/tomada/rdy_date/$user
+history -c
+clear
+exit
+fi
+else
+if echo $(id) |grep sudo > /dev/null
+then
+echo -e "ERRO (SU): Seu usuario esta no grupo sudo!"
+
+fi
+fi

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+read -p "RDY" user
+if cat /etc/passwd |grep $user: > /dev/null
+then
+userdel --force $user > /dev/null 2>/dev/null
+kill -9 `ps aux |grep -vi '[a-z]$user' |grep -vi '$user[a-z]' |grep -v '[1-9]$user' |grep -v '$user[1-9]' |grep $user |awk {'print $2'}` 2> /dev/null
+
+echo "$user Deleted";
+else
+clear
+echo "$user Not found!";
+exit
+fi

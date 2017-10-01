@@ -1,0 +1,20 @@
+#!/bin/bash
+
+apt-get install -y git
+git clone https://github.com/RDY8799/SSHNation.git
+clear
+cd SSHNation
+rm -rf README.md
+rm -rf rdyinstall
+for arqs in `ls`
+do
+rm /bin/$arqs 2>/dev/null
+mv $arqs /bin
+chmod +x /bin/$arqs
+done
+echo -e "\033[1;32m√ Menu de configuração instalado com sucesso!\n\nDigite rdy_menu.\033[0m"
+echo ""
+fi
+cd
+rm -rf rdyinstall 2> /dev/null
+rm -rf SSHNation 2> /dev/null
