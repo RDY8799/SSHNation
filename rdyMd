@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if cat /etc/passwd |grep $user: > /dev/null
+then
+read -p "RDY" user
+read -p "RDY" date
+
+chage -E $date $user 2> /dev/null
+
+echo "Ok √";
+else
+clear
+echo "$user Not found!";
+exit
+Ub
+fi

@@ -1,0 +1,8 @@
+#!/bin/bash
+#RDY SOFTWARE
+
+clear
+read -p ": " arq 
+rdynew $arq
+exit 0
+f

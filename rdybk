@@ -1,0 +1,46 @@
+#!/bin/bash
+
+#RDY SOFTWARE
+
+# © RDY SOFTWARE | 2016 - 2017 All rights reserved
+
+clear
+
+read -p "RDY" file
+clear
+
+for user in `awk -F : '$3 > 900 { print $1 }' /etc/passwd |grep -v "nobody" |grep -vi polkitd |grep -vi systemd-[a-z] |grep -vi systemd-[0-9]`
+
+do
+
+if [ -e /etc/tomada/senha/$user ]
+
+then
+
+pass=$(cat /etc/tomada/senha/$user)
+
+else
+
+pass = "rdy1234";
+
+fi
+
+
+if [ -e /etc/tomada/limite/$user ]
+
+then
+
+limite=$(cat /etc/tomada/limite/$user)
+date=$(cat /etc/tomada/rdy_date/$user)
+
+echo "$user:$pass:$limite:$date" >> /etc/mtvps/$file
+
+else
+
+echo "$user:$pass" >> /etc/mtvps/$file
+
+fi
+
+done
+
+echo "√ Backup finished! OK √";
