@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# © RDY SOFTWARE | 2016 - 2017 All rights reserved
+
+clear
+echo "[User]"
+while true; do
+for usur in `awk -F : '$3 > 900 { print $1 }' /etc/passwd |grep -v "nobody" |grep -vi polkitd |grep -vi systemd-[a-z] |grep -vi systemd-[0-9]`; do
+	usurnum=$(ps -u $usur |grep sshd |wc -l)
+  mtvps=$(cat /etc/tomada/limite/$usur)
+echo " "
+echo "$usur"
+#echo "$(printf '%-42s%s' $usur)"
+done
+exit
+clear
+done
