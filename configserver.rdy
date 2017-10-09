@@ -64,9 +64,6 @@ clear
 echo ""
 echo -e "\033[1;36m[3/3] Deseja ativar a compressão SSH? \033[0m";
 read -p "[s/n] : " -e -i s sshcompression
-echo ""
-clear
-fi
 
 if [[ "$logar" = 'n' ]]; then
 echo 'echo ""' >> ~/.bashrc
