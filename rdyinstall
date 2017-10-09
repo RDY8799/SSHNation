@@ -20,8 +20,6 @@ else
         fi
 fi
 
-
-if
 apt-get install -y git
 git clone https://github.com/RDY8799/SSHNation.git
 clear
@@ -37,8 +35,6 @@ done
 echo -e "\033[1;32m√ Menu de configuração instalado com sucesso!\n\nDigite rdy_menu.\033[0m"
 echo ""
 cd
-
-fi
 rm -rf rdyinstal* 2> /dev/null
 rm rdyinstal* 2> /dev/null
 rm -rf SSHNatio* 2> /dev/null
