@@ -248,7 +248,6 @@ http_access allow iplocal
 http_access deny all' >> /etc/squid3/squid.conf
 payloads
 service squid3 restart 1> /dev/null 2> /dev/null
-AdicionarHost
 echo -e "\033[01;31mConfiguração concluída! \033[0m"
 find / -name '*onfigserver.rd*' -exec rm {} \; > /dev/null 2> /dev/null
 echo ""
