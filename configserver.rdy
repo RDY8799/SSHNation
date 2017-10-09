@@ -1,0 +1,579 @@
+#!/bin/bash
+
+echo 3 > /proc/sys/vm/drop_caches && sysctl -w vm.drop_caches=3
+history -c
+clear
+if [ $(id -u) -eq 0 ]
+then
+	clear
+else
+	if echo $(id) |grep sudo > /dev/null
+	then
+	clear
+	echo -e "\033[1;37mVocê não é root"
+	echo -e "\033[1;37mSeu usuário está no grupo sudo"
+	echo -e "\033[1;37mPara tornar-se um usuário root execute \033[1;31msudo su\033[1;37m ou execute \033[1;31msudo $0\033[0m"
+	exit
+	else
+	clear
+	echo -e "Você não está como usuario root, nem com seus direitos (sudo)\nPara tornar-se um usuário root execute \033[1;31msu\033[0m e digite sua senha root"
+	exit
+	fi
+fi
+
+echo -e "\033[1;32mAguarde...\033[0m"
+sleep 3
+
+cat -n /etc/issue |grep 1 |cut -d' ' -f6,7,8 |sed 's/1//' |sed 's/	//' > /etc/so 
+
+ip=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -o -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
+if [[ "$ip" = "" ]]; then
+
+ip=$(wget -qO- ipv4.icanhazip.com)
+
+fi
+
+
+apt-get --reinstall install python-minimal
+
+apt-get install toilet figlet 2> /dev/null
+yum install toilet figlet 2> /dev/null
+
+echo ""
+history -c
+clear
+
+#echo 'toilet -f mono12 -F gay RDY SOFT.' >> ~/.bashrc
+
+echo " " >> /etc/sysctl.conf
+echo "#RDY" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_window_scaling = 1
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_rmem = 4096 87380 16777216
+net.ipv4.tcp_wmem = 4096 16384 16777216
+net.ipv4.tcp_low_latency = 1
+net.ipv4.tcp_slow_start_after_idle = 0" >> /etc/sysctl.conf
+echo ""
+/sbin/sysctl -p /etc/sysctl.conf
+echo ""
+clear
+
+rm /root/*nstal* > /dev/null
+clear
+echo ""
+echo -e "\033[1;36m[3/3] Deseja ativar a compressão SSH? \033[0m";
+read -p "[s/n] : " -e -i s sshcompression
+echo ""
+clear
+fi
+
+if [[ "$logar" = 'n' ]]; then
+echo 'echo ""' >> ~/.bashrc
+echo 'echo -e "\033[1;32m© Copyright 2016 - 2017 | RDY SOFTWARE - All rights reserved\033[0m"' >> ~/.bashrc 
+echo 'echo ""' >> ~/.bashrc
+logarsv="menu"
+logarsv1="desativado na inicialização"
+fi
+clear
+echo ""
+echo -e "\033[1;36m[3/3]\033[0m"
+echo ""
+echo -e "\033[1;32m√ \033[01;37mRDY SOFTWARE\033[0m"
+echo -e "\033[1;32m√ \033[01;37mCANAL:\033[1;31m@MegaTunelVPS"
+echo -e "\033[1;32m√ \033[01;37mPARA OS SISTEMAS:\033[1;31mDebian, Ubunto, Centos"
+echo -e "\033[1;32m√ \033[01;37mSISTEMA OPERACIONAL:\033[1;31m $(cat /etc/so)"
+echo -e "\033[1;32m√ \033[01;37mIP:\033[1;31m $ip"
+echo -e "\033[1;32m√ \033[1;37mPORTAS PROXY:\033[1;31m 80, 8080, 8799, 3128\033[0m"
+echo -e "\033[1;32m√ \033[1;37mSSH NAS PORTAS: \033[1;31m443, 22\033[0m"
+echo -e "\033[1;32m√ \033[1;37mSSH NOS IPs: \033[1;31m$ip, localhost, 127.0.0.1\033[0m"
+echo "-------------------------------------------------------"
+echo -e "\033[1;32m√ \033[1;37mPara configurar o OpenVPN, após a configuração do servidor, digite: \033[1;31mOpenVPN\033[0m"
+echo "-------------------------------------------------------"
+echo ""
+echo -e "\033[1;32m√ \033[1;37mMensagem: Louvai ao Senhor todos os povos da terra, porque sua misericórdia dura para sempre!\033[0m"
+echo""
+function sshd_config(){ echo "Port 22
+Port 443
+Protocol 2
+KeyRegenerationInterval 3600
+ServerKeyBits 1024
+SyslogFacility AUTH
+LogLevel INFO
+LoginGraceTime 120
+PermitRootLogin yes
+StrictModes yes
+RSAAuthentication yes
+PubkeyAuthentication yes
+IgnoreRhosts yes
+RhostsRSAAuthentication no
+HostbasedAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+PasswordAuthentication yes
+X11Forwarding yes
+X11DisplayOffset 10
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive yes
+#UseLogin no
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
+UsePAM yes" > /etc/ssh/sshd_config
+}
+
+function AddHost(){ echo '#!/bin/bash
+echo "Qual host deseja adicionar ?"
+read -p ": " host
+echo "$host" >> /etc/payloads
+squid -k reconfigure > /dev/null 2> /dev/null
+squid3 -k reconfigure > /dev/null 2> /dev/null
+echo "$host Adicionado" ' > /bin/AdicionarHost
+chmod a+x /bin/AddHost
+}
+
+function payloads(){ echo "www.speedtest.net
+.speedtest.
+telegram.me/MegaTunelVPS" > /etc/payloads
+}
+
+if [[ "$sshcompression" = 's' ]]; then
+	grep -v "^Compression yes" /etc/ssh/sshd_config > /tmp/sshcp && mv /tmp/sshcp /etc/ssh/sshd_config
+	echo "Compression yes" >> /etc/ssh/sshd_config
+fi
+
+if [[ "$sshcompression" = 'n' ]]; then
+	grep -v "^Compression yes" /etc/ssh/sshd_config > /tmp/sshcp && mv /tmp/sshcp /etc/ssh/sshd_config
+fi
+
+if cat /etc/so |grep -i ubuntu |grep 16 1> /dev/null 2> /dev/null ; then
+echo -e "\033[1;37mConfigurando...\033[0m"
+sleep 2s
+echo -e "\033[1;37mInstalando atualizações...\033[0m"
+apt-get update 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mConfigurando squid proxy...\033[0m"
+
+apt-get install -y squid3 1> /dev/null 2> /dev/null
+
+apt-get install -y nano 1> /dev/null 2> /dev/null
+
+apt-get install figlet -y 1> /dev/null 2> /dev/null
+
+service apache2 stop 1> /dev/null 2> /dev/null
+sshd_config
+service ssh restart 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mTerminando...\033[0m"
+sleep 2s
+echo "http_port 80
+http_port 8080
+http_port 8799
+http_port 3128
+visible_hostname RDYSOFTWARE
+acl ip dstdomain $ip
+http_access allow ip" > /etc/squid/squid.conf
+echo 'acl accept dstdomain -i "/etc/payloads"
+http_access allow accept
+acl local dstdomain localhost
+http_access allow local
+acl iplocal dstdomain 127.0.0.1
+http_access allow iplocal
+http_access deny all' >> /etc/squid/squid.conf
+service squid restart 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mPronto!!\033[0m"
+echo -e "\033[01;31m Configuração concluída! \033[0m"
+find / -name '*onfigserver.rd*' -exec rm {} \; > /dev/null 2> /dev/null
+echo ""
+history -c
+echo -e "\033[1;32mInstalando BadVPN, aguarde...\033[0m"
+
+apt-get install -y gcc >/dev/null 2>/dev/null
+apt-get install -y make >/dev/null 2>/dev/null
+apt-get install -y g++ >/dev/null 2>/dev/null
+apt-get install -y openssl >/dev/null 2>/dev/null
+apt-get install -y build-essential >/dev/null 2>/dev/null
+apt-get install -y cmake >/dev/null 2>/dev/null
+
+echo -e "\033[1;32mBaixando arquivos BadVPN..."; cd
+wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/badvpn/badvpn-1.999.128.tar.bz2 -o /dev/null
+history -c
+tar -xf badvpn-1.999.128.tar.bz2
+echo -e "Iniciando configurações..."
+mkdir /etc/badvpn-install
+cd /etc/badvpn-install
+cmake ~/badvpn-1.999.128 -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 >/dev/null 2>/dev/null
+echo -e "\033[1;32mConcluindo... \033[0m"
+make install
+clear
+
+rm -rf /etc/badvpn-install
+cd ; rm -rf badvpn.sh badvpn-1.999.128/ badvpn-1.999.128.tar.bz2 >/dev/null 2>/dev/null
+
+clear
+
+echo ""
+
+echo -e "\033[1;32m√ Concluído! √ \033[0m"
+echo ""
+history -c
+exit 0
+fi
+
+if cat /etc/so |grep -i ubuntu 1> /dev/null 2> /dev/null ; then
+echo -e "\033[1;37mConfigurando...\033[0m"
+sleep 2s
+echo -e "\033[1;37mInstalando atualizações...\033[0m"
+apt-get update 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mConfigurando squid proxy...\033[0m"
+apt-get install -y squid3 1> /dev/null 2> /dev/null
+
+apt-get install figlet -y 1> /dev/null 2> /dev/null
+
+apt-get install -y nano 1> /dev/null 2> /dev/null
+
+service apache2 stop 1> /dev/null 2> /dev/null
+sshd_config
+service ssh restart 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mTerminando...\033[0m"
+sleep 2s
+echo "http_port 80
+http_port 8080
+http_port 8799
+http_port 3128
+visible_hostname RDYSOFTWARE
+acl ip dstdomain $ip
+http_access allow ip" > /etc/squid3/squid.conf
+echo 'acl accept dstdomain -i "/etc/payloads"
+http_access allow accept
+acl local dstdomain localhost
+http_access allow local
+acl iplocal dstdomain 127.0.0.1
+http_access allow iplocal
+http_access deny all' >> /etc/squid3/squid.conf
+payloads
+service squid3 restart 1> /dev/null 2> /dev/null
+AdicionarHost
+echo -e "\033[01;31mConfiguração concluída! \033[0m"
+find / -name '*onfigserver.rd*' -exec rm {} \; > /dev/null 2> /dev/null
+echo ""
+history -c
+echo -e "\033[1;32mInstalando BadVPN, aguarde...\033[0m"
+
+apt-get install -y gcc >/dev/null 2>/dev/null
+apt-get install -y make >/dev/null 2>/dev/null
+apt-get install -y g++ >/dev/null 2>/dev/null
+apt-get install -y openssl >/dev/null 2>/dev/null
+apt-get install -y build-essential >/dev/null 2>/dev/null
+apt-get install -y cmake >/dev/null 2>/dev/null
+
+echo -e "\033[1;32mBaixando arquivos BadVPN..."; cd
+wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/badvpn/badvpn-1.999.128.tar.bz2 -o /dev/null
+history -c
+tar -xf badvpn-1.999.128.tar.bz2
+echo -e "Iniciando configurações..."
+mkdir /etc/badvpn-install
+cd /etc/badvpn-install
+cmake ~/badvpn-1.999.128 -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 >/dev/null 2>/dev/null
+echo -e "\033[1;32mConcluindo... \033[0m"
+make install
+clear
+
+rm -rf /etc/badvpn-install
+cd ; rm -rf badvpn.sh badvpn-1.999.128/ badvpn-1.999.128.tar.bz2 >/dev/null 2>/dev/null
+
+clear
+
+echo ""
+
+echo -e "\033[1;32m√ Concluído! √ \033[0m"
+echo ""
+history -c
+exit 0
+fi
+
+if cat /etc/so |grep -i centos 1> /dev/null 2> /dev/null ; then
+echo -e "\033[01;37mConfigurando...\033[0m"
+sleep 2s
+echo -e "\033[1;37mInstalando atualizações...\033[0m"
+yum -y update 1> /dev/null 2> /dev/null
+
+yum install -y squid 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mConfigurando squid proxy...\033[0m"
+service httpd stop 1> /dev/null 2> /dev/null
+
+sshd_config
+service sshd restart 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mTerminando...\033[0m"
+sleep 2s
+echo "http_port 80
+http_port 8080
+http_port 8799
+http_port 3128
+visible_hostname RDYSOFTWARE
+acl ip dstdomain $ip
+http_access allow ip" > /etc/squid/squid.conf
+echo 'acl accept dstdomain -i "/etc/payloads"
+http_access allow accept
+acl local dstdomain localhost
+http_access allow local
+acl iplocal dstdomain 127.0.0.1
+http_access allow iplocal
+http_access deny all' >> /etc/squid/squid.conf
+payloads
+service squid restart 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mPronto!!\033[0m"
+echo -e "\033[01;31mConfiguração concluída! \033[0m"
+find / -name '*onfigserver.rd*' -exec rm {} \; > /dev/null 2> /dev/null
+echo ""
+history -c
+echo -e "\033[1;32mInstalando BadVPN, aguarde...\033[0m"
+
+yum install -y gcc >/dev/null 2>/dev/null
+yum install -y make >/dev/null 2>/dev/null
+yum install -y g++ >/dev/null 2>/dev/null
+yum install -y openssl >/dev/null 2>/dev/null
+yum install -y build-essential >/dev/null 2>/dev/null
+yum install -y cmake >/dev/null 2>/dev/null
+
+echo -e "\033[1;32mBaixando arquivos BadVPN..."; cd
+wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/badvpn/badvpn-1.999.128.tar.bz2 -o /dev/null
+history -c
+tar -xf badvpn-1.999.128.tar.bz2
+echo -e "Iniciando configurações..."
+mkdir /etc/badvpn-install
+cd /etc/badvpn-install
+cmake ~/badvpn-1.999.128 -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 >/dev/null 2>/dev/null
+echo -e "\033[1;32mConcluindo... \033[0m"
+make install
+clear
+
+rm -rf /etc/badvpn-install
+cd ; rm -rf badvpn.sh badvpn-1.999.128/ badvpn-1.999.128.tar.bz2 >/dev/null 2>/dev/null
+
+clear
+
+echo ""
+
+echo -e "\033[1;32m√ Concluído! √ \033[0m"
+echo ""
+history -c
+exit
+fi
+
+if cat /etc/so |grep -i debian 1> /dev/null 2> /dev/null ; then
+echo -e "\033[01;37mConfigurando...\033[0m"
+echo -e "\033[1;37mInstalando atualizações...\033[0m"
+apt-get update 1> /dev/null 2> /dev/null
+
+apt-get install -y squid3 1> /dev/null 2> /dev/null
+
+apt-get install -y nano 1> /dev/null 2> /dev/null
+
+apt-get install figlet -y 1> /dev/null 2> /dev/null
+
+echo -e "\033[1;37mConfigurando squid proxy...\033[0m"
+service apache2 stop 1> /dev/null 2> /dev/null
+
+sshd_config
+
+service ssh restart 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mTerminando...\033[0m"
+sleep 2s
+echo "http_port 80
+http_port 8080
+http_port 8799
+http_port 3128
+visible_hostname RDYSOFTWARE
+acl ip dstdomain $ip
+http_access allow ip" > /etc/squid3/squid.conf
+echo 'acl accept dstdomain -i "/etc/payloads"
+http_access allow accept
+acl local dstdomain localhost
+http_access allow local
+acl iplocal dstdomain 127.0.0.1
+http_access allow iplocal
+http_access deny all' >> /etc/squid3/squid.conf
+payloads
+service squid3 restart 1> /dev/null 2> /dev/null
+echo -e "\033[01;31mConfiguração concluída! \033[0m"
+find / -name '*onfigserver.rd*' -exec rm {} \; > /dev/null 2> /dev/null
+history -c
+echo ""
+echo -e "\033[1;32mInstalando BadVPN, aguarde...\033[0m"
+
+apt-get install -y gcc >/dev/null 2>/dev/null
+apt-get install -y make >/dev/null 2>/dev/null
+apt-get install -y g++ >/dev/null 2>/dev/null
+apt-get install -y openssl >/dev/null 2>/dev/null
+apt-get install -y build-essential >/dev/null 2>/dev/null
+apt-get install -y cmake >/dev/null 2>/dev/null
+
+echo -e "\033[1;32mBaixando arquivos BadVPN..."; cd
+wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/badvpn/badvpn-1.999.128.tar.bz2 -o /dev/null
+history -c
+tar -xf badvpn-1.999.128.tar.bz2
+echo -e "Iniciando configurações..."
+mkdir /etc/badvpn-install
+cd /etc/badvpn-install
+cmake ~/badvpn-1.999.128 -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 >/dev/null 2>/dev/null
+echo -e "\033[1;32mConcluindo... \033[0m"
+make install
+clear
+
+rm -rf /etc/badvpn-install
+cd ; rm -rf badvpn.sh badvpn-1.999.128/ badvpn-1.999.128.tar.bz2 >/dev/null 2>/dev/null
+
+clear
+
+echo ""
+
+echo -e "\033[1;32m√ Concluído! √ \033[0m"
+echo ""
+history -c
+exit 0
+fi
+
+
+
+if cat /etc/issue |grep -i kernel 1> /dev/null 2> /dev/null ; then
+echo -e "\033[01;31mConfigurando...\033[0m"
+sleep 2s
+echo -e "\033[1;37mInstalando atualizações...\033[0m"
+yum -y update 1> /dev/null 2> /dev/null
+
+yum install -y squid 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mConfigurando squid proxy...\033[0m"
+service httpd stop 1> /dev/null 2> /dev/null
+
+sshd_config
+service sshd restart 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mTerminando...\033[0m"
+sleep 2s
+echo "http_port 80
+http_port 8080
+http_port 8799
+http_port 3128
+visible_hostname RDYSOFTWARE
+acl ip dstdomain $ip
+http_access allow ip" > /etc/squid/squid.conf
+echo 'acl accept dstdomain -i "/etc/payloads"
+http_access allow accept
+acl local dstdomain localhost
+http_access allow local
+acl iplocal dstdomain 127.0.0.1
+http_access allow iplocal
+http_access deny all' >> /etc/squid/squid.conf
+payloads
+service squid restart 1> /dev/null 2> /dev/null
+AdicionarHost
+echo -e "\033[1;37mPronto!!\033[0m"
+echo -e "\033[01;31mConfiguração concluída! \033[0m"
+find / -name '*onfigserver.rd*' -exec rm {} \; > /dev/null 2> /dev/null
+echo ""
+history -c
+echo -e "\033[1;32mInstalando BadVPN, aguarde...\033[0m"
+
+apt-get install -y gcc >/dev/null 2>/dev/null
+apt-get install -y make >/dev/null 2>/dev/null
+apt-get install -y g++ >/dev/null 2>/dev/null
+apt-get install -y openssl >/dev/null 2>/dev/null
+apt-get install -y build-essential >/dev/null 2>/dev/null
+apt-get install -y cmake >/dev/null 2>/dev/null
+
+echo -e "\033[1;32mBaixando arquivos BadVPN..."; cd
+wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/badvpn/badvpn-1.999.128.tar.bz2 -o /dev/null
+history -c
+tar -xf badvpn-1.999.128.tar.bz2
+echo -e "Iniciando configurações..."
+mkdir /etc/badvpn-install
+cd /etc/badvpn-install
+cmake ~/badvpn-1.999.128 -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 >/dev/null 2>/dev/null
+echo -e "\033[1;32mConcluindo... \033[0m"
+make install
+clear
+
+rm -rf /etc/badvpn-install
+cd ; rm -rf badvpn.sh badvpn-1.999.128/ badvpn-1.999.128.tar.bz2 >/dev/null 2>/dev/null
+
+clear
+
+echo ""
+
+echo -e "\033[1;32m√ Concluído! √ \033[0m"
+echo ""
+history -c
+exit
+fi
+
+echo -e "\033[01;31mConfigurando...\033[0m"
+sleep 2s
+echo -e "\033[1;37mInstalando atualizações...\033[0m"
+yum -y update 1> /dev/null 2> /dev/null
+yum install -y squid 1> /dev/null 2> /dev/null
+echo -e "\033[1;37mInstalando atualizações...\033[0m"
+apt-get update > /dev/null 2> /dev/null
+
+echo -e "\033[1;37mConfigurando squid proxy...\033[0m"
+apt-get install -y squid3 > /dev/null 2>/dev/null
+service httpd stop 1> /dev/null 2> /dev/null
+service apache2 stop >/dev/null 2> /dev/null
+sshd_config
+service sshd restart 1> /dev/null 2> /dev/null
+service ssh restart > /dev/null 2> /dev/null
+echo -e "\033[1;37mTerminando...\033[0m"
+sleep 2s
+echo "http_port 80
+http_port 8080
+http_port 8799
+http_port 3128
+visible_hostname RDYSOFTWARE
+acl ip dstdomain $ip
+http_access allow ip" > /etc/squid*/squid.conf
+echo 'acl accept dstdomain -i "/etc/payloads"
+http_access allow accept
+acl local dstdomain localhost
+http_access allow local
+acl iplocal dstdomain 127.0.0.1
+http_access allow iplocal
+http_access deny all' >> /etc/squid*/squid.conf
+payloads
+service squid restart 1> /dev/null 2> /dev/null
+service squid3 restart > /dev/null 2> /dev/null
+echo -e "\033[1;37mPronto!!\033[0m"
+echo -e "\033[01;31mConfiguração concluída! \033[0m"
+find / -name '*onfigserver.rd*' -exec rm {} \; > /dev/null 2> /dev/null
+echo ""
+echo -e "\033[1;32mInstalando BadVPN, aguarde...\033[0m"
+
+yum install -y gcc >/dev/null 2>/dev/null
+yum install -y make >/dev/null 2>/dev/null
+yum install -y g++ >/dev/null 2>/dev/null
+yum install -y openssl >/dev/null 2>/dev/null
+yum install -y build-essential >/dev/null 2>/dev/null
+yum install -y cmake >/dev/null 2>/dev/null
+
+echo -e "\033[1;32mBaixando arquivos BadVPN..."; cd
+wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/badvpn/badvpn-1.999.128.tar.bz2 -o /dev/null
+history -c
+tar -xf badvpn-1.999.128.tar.bz2
+echo -e "Iniciando configurações..."
+mkdir /etc/badvpn-install
+cd /etc/badvpn-install
+cmake ~/badvpn-1.999.128 -DBUILD_NOTHING_BY_DEFAULT=1 -DBUILD_UDPGW=1 >/dev/null 2>/dev/null
+echo -e "\033[1;32mConcluindo... \033[0m"
+make install
+clear
+
+rm -rf /etc/badvpn-install
+cd ; rm -rf badvpn.sh badvpn-1.999.128/ badvpn-1.999.128.tar.bz2 >/dev/null 2>/dev/null
+
+clear
+
+echo ""
+
+echo -e "\033[1;32m√ Concluído! √ \033[0m"
+echo ""
+history -c
+
+fi
+fi
+fi
