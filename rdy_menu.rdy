@@ -409,7 +409,7 @@ echo -e "\033[1;32m[09] Configure server (OpenSSH) \033[0m"
 echo -e "\033[1;32m[10] Adicionar Host \033[0m"
 echo -e "\033[1;32m[11] Speed Test \033[0m"
 echo -e "\033[1;32m[12]System info \033[0m"
-echo -e "\033[1;33m[00]Reboot \033[0m"
+echo -e "\033[1;33m[506]Reboot \033[0m"
 echo -e "\033[1;36m[01-12]: "; read -p ""  option
 
    case $option in
@@ -425,12 +425,12 @@ echo -e "\033[1;36m[01-12]: "; read -p ""  option
 10) rdy_addhost ;;
 11) rdy_speedtest ;;
 12) rdy_system_info ;;
-500) rdy_add_banner ;;
-501) rdy_new_banner ;;
-502) rdy_delete_expired ;;
-503) rdy_change_date ;;
-504) rdy_change_limit ;;
-505) rdy_change_pass ;;
-00) reboot ;;
+13) rdy_add_banner ;;
+14) rdy_new_banner ;;
+15) rdy_delete_expired ;;
+16) rdy_change_date ;;
+17) rdy_change_limit ;;
+18) rdy_change_pass ;;
+19) reboot ;;
  *) "Unknown option." ; echo ; sleep 2 ; rdy_menu ;;
    esac
