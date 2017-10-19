@@ -256,7 +256,7 @@ read -p "RDY" user
 read -p "RDY" date
 
 chage -E $date $user 2> /dev/null
-
+echo "$date" > /etc/tomada/rdy_date/$user
 echo "Ok √";
 else
 clear
@@ -285,17 +285,17 @@ rdy_change_pass(){
 read -p "RDY user: " user
 if cat /etc/passwd |grep $user: > /dev/null
 then
+read -p "RDY new pass: " password
+(echo $password; echo $password)|passwd $user 2>/dev/null
+echo "OK - $user: new pass $password
+echo "$password" > /etc/tomada/senha/$user
+exit
 else
 clear
 echo "$user Not found!"
 exit
 Ub
 fi
-read -p "RDY new pass: " password
-(echo $password; echo $password)|passwd $user 2>/dev/null
-echo "OK - $user: new pass $password
-echo "$password" > /etc/tomada/senha/$user
-exit
 }
 
 rdy_update(){
