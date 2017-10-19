@@ -74,6 +74,30 @@ echo -e "\033[1;32m √ OK √ \033[0m"
 
 ####
 
+addhost(){
+rdy="/etc/payloads"
+clear
+echo -e "\033[42;1;37mFERRAMENTA PARA ADICIONAR NOVOS HOSTS\033[0m"
+echo ""
+if [ ! -f "$rdy" ]
+then
+echo ""
+echo -e "\033[1;36mArquivo \033[4;31m$rdy\033[0m não encontrado!\033[0m"
+exit 1
+else
+echo -e "\033[1;36mDomínios atuais no arquivo \033[4;31m$rdy\033[0m:\033[0m"
+cat $rdy ; 
+echo ""
+echo -e "\033[1;36mDigite o novo Host\033[0m"
+read -p ": " host
+echo "$host" >> /etc/payload
+squid3 -k reconfigure 2> /dev/null
+squid -k reconfigure 2> /dev/null
+echo -e "\033[1;32m√ \033[4;31m$host\033[0m foi adicionado com sucesso! √\033[0m"
+fi
+
+}
+
 rdy_rssh(){
 echo -e "\033[1;31mRestarting SSH service...\033[0m"
 service ssh restart 1> /dev/null 2> /dev/null
@@ -103,6 +127,7 @@ rm /bin/rdyMd
 rm /bin/rdyrb
 rm /bin/rdynew
 rm /bin/rdy_menu
+rm /bin/configserver.rdy
 
 echo -e "\033[1;32m√ OK √ \033[0m"
 }
@@ -111,9 +136,14 @@ echo -e "\033[1;32m√ OK √ \033[0m"
 
 help(){
 echo "working update!";
+rm rdy*
+wget https://raw.githubusercontent.com/RDY8799/SSHNation/master/rdyinstall && chmod 711 rdy* && bash rdyinstall
 }
 
 ####
+
+cat -n /etc/issue |grep 1 |cut -d' ' -f6,7,8 |sed 's/1//' |sed 's/	//' > /etc/so
+clear
 
 echo "";
 
@@ -136,7 +166,8 @@ echo "";
 echo -e "\033[1;32m[07] ADD USER \033[0m";
 echo -e "\033[1;32m[08] DELETE USER \033[0m";
 echo -e "\033[1;32m[09] Configure server (OpenSSH) \033[0m"
-echo -e "\033[1;36m[01-09]: "; read -p ""  option
+echo -e "\033[1;32m[10] Adicionar Host \033[0m"
+echo -e "\033[1;36m[01-10]: "; read -p ""  option
 
    case $option in
 1 | 01) rdy_rssh ;;
@@ -148,5 +179,6 @@ echo -e "\033[1;36m[01-09]: "; read -p ""  option
 7 | 07) rdyau ;;
 8 | 08) rdydu ;;
 9 | 09) configserver.rdy ;;
+10) addhost ;;
  *) "Unknown option." ; echo ; sleep 2 ; rdy_menu ;;
    esac
