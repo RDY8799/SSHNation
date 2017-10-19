@@ -289,12 +289,10 @@ read -p "RDY new pass: " password
 (echo $password; echo $password)|passwd $user 2>/dev/null
 echo "OK - $user: new pass $password
 echo "$password" > /etc/tomada/senha/$user
-exit
 else
 clear
 echo "$user Not found!"
 exit
-Ub
 fi
 }
 
