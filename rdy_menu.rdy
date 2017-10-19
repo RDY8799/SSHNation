@@ -262,23 +262,25 @@ else
 clear
 echo "$user Not found!";
 exit
-Ub
 fi
 }
 
 rdy_change_limit(){
-echo "[Limit]"
-while true; do
-for usur in `awk -F : '$3 > 900 { print $1 }' /etc/passwd |grep -v "nobody" |grep -vi polkitd |grep -vi systemd-[a-z] |grep -vi systemd-[0-9]`; do
-	usurnum=$(ps -u $usur |grep sshd |wc -l)
-  mtvps=$(cat /etc/tomada/limite/$usur)
-echo " "
-echo "$usurnum/$mtvps"
-#echo "$(printf '%-42s%s' $usurnum/$mtvps)"
-done
+read -p "RDY" user
+ if cat /etc/passwd |grep $user: > /dev/null
+then
+read -p "RDY" logins
+  limit $user $logins
+echo ""
+echo "√ OK √ User: $user -> Limit: $logins";
+ else
+ clear
+echo "User $user not found";
 exit
-clear
-done
+ fi
+exit
+fi
+
 }
 
 rdy_change_pass(){
@@ -292,7 +294,6 @@ echo "$password" > /etc/tomada/senha/$user
 else
 clear
 echo "$user Not found!"
-exit
 fi
 }
 
