@@ -227,26 +227,7 @@ history -c
 }
 
 rdy_delete_expired(){
-
-datahoje=$(date +%s)
-for user in $(cat /etc/passwd |grep -v "nobody" |awk -F : '$3 > 900 {print $1}')
-do
-dataexp=$(chage -l $user |grep "Account expires" |awk -F : '{print $2}')
-if [[ $dataexp == ' never' ]]; then
-id > /dev/null 2>/dev/null
-else
-dataexpn=$(date -d"$dataexp" '+%d/%m/%Y')
-dataexpnum=$(date '+%s' -d"$dataexp")
-fi
-if [[ $dataexpnum < $datahoje ]]; then
-printf '%-41s' $user
-echo "Expired Deleted"
-kill $(ps -u $user |awk '{print $1}') >/dev/null 2>/dev/null ; userdel $user
-else
-printf '%-41s' $user
-echo $dataexpn
-fi
-done
+echo "Expired date";
 }
 
 rdy_change_date(){
