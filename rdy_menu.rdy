@@ -1,0 +1,438 @@
+#!/bin/bash
+
+# © RDY SOFTWARE | 2016 - 2017 All rights reserved
+
+clear
+
+if [ $(id -u) -eq 0 ]
+then
+clear
+else
+	if echo $(id) |grep sudo > /dev/null
+	then
+	clear
+	echo "Você não é root"
+	echo "Seu usuário esta no grupo sudo"
+	echo -e "Para tornar-se root execute \033[1;31msudo su\033[0m"
+	exit
+	else
+	clear
+	echo -e "Você não está como usuário root, nem com seus direitos (sudo)\nPara tornar-se root execute \033[1;31msu\033[0m e digite sua senha root"
+	exit
+	fi
+fi
+
+
+if [ -d /etc/tomada ]
+then
+echo ""
+else
+mkdir /etc/tomada
+fi
+
+if [ -d /etc/mtvps ]
+then
+echo ""
+else
+mkdir /etc/mtvps
+fi
+
+if [ -d /etc/tomada/senha ]
+then
+echo ""
+else
+mkdir /etc/tomada/senha
+fi
+
+if [ -d /etc/tomada/limite ]
+then
+echo ""
+else
+mkdir /etc/tomada/limite
+fi
+
+#RDY SOFTWARE
+
+ip=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -o -E '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
+
+if [[ "$ip" = "" ]]; then
+ip=$(wget -qO- ipv4.icanhazip.com)
+fi
+
+rdy_add_user(){
+if [ -d /etc/tomada/rdy_date ]
+then
+echo ""
+else
+mkdir /etc/tomada/rdy_date
+fi
+
+if [ $(id -u) -eq 0 ]
+then
+read -p "RDY user: " user
+if cat /etc/passwd |grep $user: |grep -vi [a-z]$user |grep -v [0-9]$user > /dev/null
+	then
+clear
+echo "ERRO 03 (RDY): Usuario $user ja existe, crie outro usuario.";
+exit
+else
+read -p "RDY pass: "  password
+read -p "RDY days: "  days
+read -p "RDY limit: "  logins
+clear
+rdyw=$(date '+%C%y-%m-%d' -d " +$days days")
+rdyx=$(date "+%d/%m/%Y" -d "+ $days days")
+useradd -M -s /bin/false $user -e $rdyw
+		(echo $password; echo $password)|passwd $user 2>/dev/null
+limit $user $logins 2>/dev/null
+history -c
+clear
+
+echo "CRIADO!";
+echo "User: [ $user ]";
+echo "";
+echo "Pass: [ $password ]";
+echo "";
+echo "Valid.: [ $rdyx ]";
+echo "$password" > /etc/tomada/senha/$user
+echo "$rdyw" > /etc/tomada/rdy_date/$user
+history -c
+exit
+fi
+else
+if echo $(id) |grep sudo > /dev/null
+then
+echo -e "ERRO (SU): Seu usuario esta no grupo sudo!"
+
+fi
+fi
+
+}
+
+rdy_delete_user(){
+read -p "RDY user: " user
+if cat /etc/passwd |grep $user: > /dev/null
+then
+userdel --force $user > /dev/null 2>/dev/null
+kill -9 `ps aux |grep -vi '[a-z]$user' |grep -vi '$user[a-z]' |grep -v '[1-9]$user' |grep -v '$user[1-9]' |grep $user |awk {'print $2'}` 2> /dev/null
+
+echo "$user Deleted";
+else
+clear
+echo "$user Not found!";
+exit
+fi
+}
+
+rdy_speedtest(){
+echo -e "\033[42;1;37mSPEEDTEST\033[0m"
+echo ""
+echo -e "\033[1;31mLoading...\033[0m"
+ping=$(ping -c1 google.com |awk '{print $8 $9}' |grep -v loss |cut -d = -f2 |sed ':a;N;s/\n//g;ta')
+echo ""
+echo -e "\033[1;36mPing: \033[1;32m$ping\033[0m"
+velo=$(speedtest.py |grep load:)
+echo "$velo"
+
+}
+
+rdy_system_info(){
+if [ ! /proc/cpuinfo ]
+then
+echo -e "\033[1;31mError Getting System Information.\033[0m"
+exit 0
+fi
+if [ ! /etc/issue.net ]
+then
+echo -e "\033[1;31mError Getting System Information.\033[0m"
+exit 0
+fi
+if [ ! /proc/meminfo ]
+then
+echo -e "\033[1;31mError Getting System Information.\033[0m"
+exit 0
+fi
+
+system=$(cat /etc/issue.net)
+based=$(cat /etc/*release | grep ID_LIKE | awk -F "=" '{print $2}')
+processor=$(cat /proc/cpuinfo | grep "model name" | uniq | awk -F ":" '{print $2}')
+cpus=$(cat /proc/cpuinfo | grep processor | wc -l)
+
+if [ "$system" ]
+then
+
+echo "System: $system"
+else
+echo -e "\033[1;31mSystem: Not Available\033[0m"
+fi
+if [ "$based" ]
+then
+echo "Its a $based-like"
+else
+echo "\033[1;31mBased system not Available\033[0m"
+fi
+if [ "$processor" ]
+then
+echo "Processor: $processor x$cpus"
+else
+echo "\033[1;31mProcessor: Not Available\033[0m"
+fi
+clock=$(lscpu | grep "CPU MHz" | awk '{print $3}')
+if [ "$clock" ]
+then
+echo "Clock: $clock MHz"
+else
+echo "\033[1;31mClock: Not Available\033[0m"
+fi
+echo "$(ps aux  | awk 'BEGIN { sum = 0 }  { sum += sprintf("%f",$3) }; END { printf "CPU Usage: " "%.2f" "%%", sum}')"
+totalram=$(free | grep Mem | awk '{print $2}')
+usedram=$(free | grep Mem | awk '{print $3}')
+freeram=$(free | grep Mem | awk '{print $4}')
+swapram=$( cat /proc/meminfo | grep SwapTotal | awk '{print $2}')
+echo "RAM TOTAL: $(($totalram / 1024))MB USED: $(($usedram / 1024))MB FREE: $(($freeram / 1024))MB SWAP: $(($swapram / 1024))MB "
+echo "Uptime: $(uptime)"
+echo "Hostname: $(hostname)"
+echo "IP: $(ip addr | grep inet | grep -v inet6 | grep -v "host lo" | awk '{print $2}' | awk -F "/" '{print $1}')"
+echo "Kernel Version: $(uname -r)"
+echo "Architecture: $(uname -m)"
+
+}
+
+rdy_add_banner(){
+read -p ": " juntar
+echo "$juntar" >> /etc/bannerssh
+service ssh restart 1> /dev/null 2>/dev/null
+service sshd restart 1>/dev/null 2>/dev/null
+echo "OK - Banner as been added!";
+}
+
+rdy_new_banner(){
+ssg=$(cat /etc/ssh/sshd_config |grep -v "Banner")
+echo "$ssg" > /etc/ssh/sshd_config
+echo "Banner /etc/bannerssh" >> /etc/ssh/sshd_config
+service ssh restart 1>/dev/null 2>/dev/null
+service sshd restart 1>/dev/null 2>/dev/null
+if [ -f /etc/bannerssh ]
+then
+banner=$(cat /etc/bannerssh)
+else
+banner="No Banner!";
+fi
+read -p ": " bannerssh
+echo "$bannerssh" > /etc/bannerssh
+service ssh restart 1> /dev/null 2>/dev/null
+service sshd restart 1>/dev/null 2>/dev/null
+echo "OK - Banner successful added!";
+history -c
+}
+
+rdy_delete_expired(){
+
+datahoje=$(date +%s)
+for user in $(cat /etc/passwd |grep -v "nobody" |awk -F : '$3 > 900 {print $1}')
+do
+dataexp=$(chage -l $user |grep "Account expires" |awk -F : '{print $2}')
+if [[ $dataexp == ' never' ]]; then
+id > /dev/null 2>/dev/null
+else
+dataexpn=$(date -d"$dataexp" '+%d/%m/%Y')
+dataexpnum=$(date '+%s' -d"$dataexp")
+fi
+if [[ $dataexpnum < $datahoje ]]; then
+printf '%-41s' $user
+echo "Expired Deleted"
+kill $(ps -u $user |awk '{print $1}') >/dev/null 2>/dev/null ; userdel $user
+else
+printf '%-41s' $user
+echo $dataexpn
+fi
+done
+}
+
+rdy_change_date(){
+if cat /etc/passwd |grep $user: > /dev/null
+then
+read -p "RDY" user
+read -p "RDY" date
+
+chage -E $date $user 2> /dev/null
+
+echo "Ok √";
+else
+clear
+echo "$user Not found!";
+exit
+Ub
+fi
+}
+
+rdy_change_limit(){
+echo "[Limit]"
+while true; do
+for usur in `awk -F : '$3 > 900 { print $1 }' /etc/passwd |grep -v "nobody" |grep -vi polkitd |grep -vi systemd-[a-z] |grep -vi systemd-[0-9]`; do
+	usurnum=$(ps -u $usur |grep sshd |wc -l)
+  mtvps=$(cat /etc/tomada/limite/$usur)
+echo " "
+echo "$usurnum/$mtvps"
+#echo "$(printf '%-42s%s' $usurnum/$mtvps)"
+done
+exit
+clear
+done
+}
+
+rdy_change_pass(){
+read -p "RDY user: " user
+if cat /etc/passwd |grep $user: > /dev/null
+then
+else
+clear
+echo "$user Not found!"
+exit
+Ub
+fi
+read -p "RDY new pass: " password
+(echo $password; echo $password)|passwd $user 2>/dev/null
+echo "OK - $user: new pass $password
+echo "$password" > /etc/tomada/senha/$user
+exit
+}
+
+rdy_update(){
+echo -e "\033[1;32m Updating... \033[0m"
+sleep 3
+rm rdy*
+wget https://raw.githubusercontent.com/RDY8799/SSHNation/master/rdyinstall && chmod 711 rdy* && bash rdyinstall
+}
+
+####
+
+rdy_rsquid(){
+echo -e "\033[1;31mRestarting SQUID service...\033[0m"
+service squid restart 1> /dev/null 2> /dev/null
+service squid3 restart 1> /dev/null 2> /dev/null
+echo -e "\033[1;32m √ OK √ \033[0m"
+}
+
+####
+
+rdy_addhost(){
+rdy="/etc/payloads"
+clear
+echo -e "\033[42;1;37mFERRAMENTA PARA ADICIONAR NOVOS HOSTS\033[0m"
+echo ""
+if [ ! -f "$rdy" ]
+then
+echo ""
+echo -e "\033[1;36mArquivo \033[4;31m$rdy\033[0m não encontrado!\033[0m"
+exit 1
+else
+echo -e "\033[1;36mDomínios atuais no arquivo \033[4;31m$rdy\033[0m:\033[0m"
+cat $rdy ; 
+echo ""
+echo -e "\033[1;36mDigite o novo Host\033[0m"
+read -p ": " host
+echo "$host" >> /etc/payload
+squid3 -k reconfigure 2> /dev/null
+squid -k reconfigure 2> /dev/null
+echo -e "\033[1;32m√ \033[4;31m$host\033[0m foi adicionado com sucesso! √\033[0m"
+fi
+
+}
+
+rdy_rssh(){
+echo -e "\033[1;31mRestarting SSH service...\033[0m"
+service ssh restart 1> /dev/null 2> /dev/null
+service sshd restart 1> /dev/null 2> /dev/null
+echo -e "\033[1;32m √ OK √ \033[0m"
+}
+
+####
+
+rdy_reboot(){
+echo -e "\033[1;36mRebooting... Bye! \033[0m"
+sleep 2
+reboot
+}
+
+####
+
+rdy_uninstall(){
+echo -e "\033[1;32m Uninstalling... \033[0m"
+sleep 3
+rm /bin/rdyLe
+rm /bin/rdyau
+rm /bin/rdydu
+rm /bin/rdyMl
+rm /bin/rdybk
+rm /bin/limit
+rm /bin/rdyMd
+rm /bin/rdyrb
+rm /bin/rdynew
+rm /bin/rdy_menu
+rm /bin/configserver.rdy
+clear
+echo -e "\033[1;32m√ OK √ \033[0m"
+
+}
+
+####
+
+help(){
+echo "working update!";
+}
+
+####
+
+cat -n /etc/issue |grep 1 |cut -d' ' -f6,7,8 |sed 's/1//' |sed 's/	//' > /etc/so
+clear
+
+echo "";
+
+echo -e "\033[1;32m© RDY SOFTWARE | 2016 - 2017 All rights reserved\033[0m";
+echo "";
+echo "----------------------------------------------------";
+echo -e "\033[1;32m -> \033[01;37mIP:\033[1;31m $ip";
+echo "";
+echo -e "\033[1;32m -> \033[01;37mOPERATIONAL SYSTEM:\033[1;31m $(cat /etc/so)";
+echo "----------------------------------------------------";
+echo -e "\033[1;36m[ # CTRL + C to exit # ]\033[0m"
+echo "";
+echo -e "\033[1;33m[01] Restart SSH Server \033[0m";
+echo -e "\033[1;33m[02] Restart SQUID Proxy \033[0m";
+echo -e "\033[1;33m[03] REBOOT SERVER \033[0m";
+echo -e "\033[1;33m[04] Update script \033[0m";
+echo -e "\033[1;33m[05] Uninstall script  \033[0m";
+echo -e "\033[1;33m[06] Help \033[0m";
+echo "";
+echo -e "\033[1;32m[07] ADD USER \033[0m";
+echo -e "\033[1;32m[08] DELETE USER \033[0m";
+echo -e "\033[1;32m[09] Configure server (OpenSSH) \033[0m"
+echo -e "\033[1;32m[10] Adicionar Host \033[0m"
+echo -e "\033[1;32m[11] Speed Test \033[0m"
+echo -e "\033[1;32m[12]System info \033[0m"
+echo -e "\033[1;33m[00]Reboot \033[0m"
+echo -e "\033[1;36m[01-12]: "; read -p ""  option
+
+   case $option in
+1 | 01) rdy_rssh ;;
+2 | 02) rdy_rsquid ;;
+3 | 03) rdy_reboot ;;
+4 | 04) rdy_update ;;
+5 | 05) rdy_uninstall ;;
+6 | 06) rdy_help ;;
+7 | 07) rdy_add_user ;;
+8 | 08) rdy_delete_user ;;
+9 | 09) configserver.rdy ;;
+10) rdy_addhost ;;
+11) rdy_speedtest ;;
+12) rdy_system_info ;;
+500) rdy_add_banner
+501) rdy_new_banner ;;
+502) rdy_delete_expired ;;
+503) rdy_change_date ;;
+504) rdy_change_limit ;;
+505) rdy_change_pass ;;
+00) reboot ;;
+ *) "Unknown option." ; echo ; sleep 2 ; rdy_menu ;;
+   esac
