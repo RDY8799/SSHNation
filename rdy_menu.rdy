@@ -278,8 +278,6 @@ echo "√ OK √ User: $user -> Limit: $logins";
 echo "User $user not found";
 exit
  fi
-exit
-fi
 
 }
 
