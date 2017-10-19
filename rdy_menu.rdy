@@ -425,7 +425,7 @@ echo -e "\033[1;36m[01-12]: "; read -p ""  option
 10) rdy_addhost ;;
 11) rdy_speedtest ;;
 12) rdy_system_info ;;
-500) rdy_add_banner
+500) rdy_add_banner ;;
 501) rdy_new_banner ;;
 502) rdy_delete_expired ;;
 503) rdy_change_date ;;
