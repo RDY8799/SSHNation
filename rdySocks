@@ -18,6 +18,36 @@ rosa=proxy8080.py
 preto=proxy8799.py
 azul=proxy3128.py
 
+sshd_config(){ echo "Port 22
+Port 144
+Port 443
+Protocol 2
+KeyRegenerationInterval 3600
+ServerKeyBits 1024
+SyslogFacility AUTH
+LogLevel INFO
+LoginGraceTime 120
+PermitRootLogin yes
+StrictModes yes
+RSAAuthentication yes
+PubkeyAuthentication yes
+IgnoreRhosts yes
+RhostsRSAAuthentication no
+HostbasedAuthentication no
+PermitEmptyPasswords no
+ChallengeResponseAuthentication no
+PasswordAuthentication yes
+X11Forwarding yes
+X11DisplayOffset 10
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive yes
+#UseLogin no
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
+UsePAM yes" > /etc/ssh/sshd_config
+}
+
 if [ -e "$abobora$verde" ] ; then
 echo -e "\033[1;32mPort 80 OK √ \033[0m"
 history -c
@@ -45,6 +75,9 @@ wget https://raw.githubusercontent.com/RDY8799/SSHNation/master/proxy8799.py > /
 history -c
 fi
 
+sshd_config
+
+
 if [ -e "$abobora$azul" ] ; then
 echo -e "\033[1;32mPort 3128 OK √ \033[0m"
 history -c
@@ -56,7 +89,7 @@ fi
 
 sleep 2
 
-echo -e "\033[4;36m © RDY SOFTWARE | 2016 - 2017 All rights reserved \033[0m"
+echo ""
 
 echo -e "\033[1;31mATENÇÃO! \033[0m"
 echo ""
@@ -83,6 +116,8 @@ read -p "[s/n]: " -e -i s port3128
 
 service squid3 stop > /dev/null 2> /dev/null
 service squid stop > /dev/null 2> /dev/null
+service ssh restart > /dev/null 2> /dev/null
+service sshd restart > /dev/null 2> /dev/null
 
 if [[ "$port80" = 's' ]]; then
 chmod a+x proxy.py && nohup python proxy.py > proxy.txt &
@@ -101,5 +136,5 @@ fi
 if [[ "$port3128" = 's' ]]; then
 chmod a+x proxy3128.py && nohup python proxy3128.py > proxy3128.txt &
 fi
-
+echo ""
 echo -e "\033[1;32mTudo pronto! \n\nCanal: http://t.me/rdysoftware \033[0m"
