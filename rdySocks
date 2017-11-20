@@ -1,0 +1,87 @@
+#!/bin/bash
+
+echo -e "\033[4;36m © RDY SOFTWARE | 2016 - 2017 All rights reserved \033[0m"
+
+echo ""
+
+echo -e "\033[1;36mStart PythonSocks\033[0m"
+echo ""
+echo -e "\033[1;31mVerificando... \033[0m"
+
+abobora=/root/
+verde=proxy.py
+rosa=proxy8080.py
+preto=proxy8799.py
+azul=proxy3128.py
+
+if [ -e "$abobora$verde" ] ; then
+echo -e "\033[1;32mPort 80 OK √ \033[0m"
+history -c
+else
+echo -e "\033[1;31mBaixando arquivos para porta 80...\033[0m"
+history -c
+exit
+fi
+
+if [ -e "$abobora$rosa" ] ; then
+echo -e "\033[1;32mPort 8080 OK √ \033[0m"
+history -c
+else
+echo -e "\033[1;31mBaixando arquivos para porta 8080...\033[0m"
+history -c
+exit
+fi
+
+if [ -e "$abobora$preto" ] ; then
+echo -e "\033[1;32mPort 8799 OK √ \033[0m"
+history -c
+else
+echo -e "\033[1;31mBaixando arquivos para porta 8799...\033[0m"
+history -c
+exit
+fi
+
+if [ -e "$abobora$azul" ] ; then
+echo -e "\033[1;32mPort 3128 OK √ \033[0m"
+history -c
+else
+echo -e "\033[1;31mBaixando arquivos para porta 3128...\033[0m"
+history -c
+exit
+fi
+
+sleep 2
+
+echo -e "\033[4;36m © RDY SOFTWARE | 2016 - 2017 All rights reserved \033[0m"
+
+echo -e "\033[1;32mAbrir porta 80? \033[0m"
+read -p "[s/n]: " -e -i s port80
+
+echo -e "\033[1;32mAbrir porta 8080? \033[0m"
+read -p "[s/n]: " -e -i s port8080
+
+echo -e "\033[1;32mAbrir porta 8799? \033[0m"
+read -p "[s/n]: " -e -i s port8799
+
+echo -e "\033[1;32mAbrir porta 3128? \033[0m"
+read -p "[s/n]: " -e -i s port3128
+
+if [[ "$port80" = 's' ]]; then
+chmod a+x proxy.py && nohup python proxy.py > proxy.txt &
+fi
+
+if [[ "$port8080" = 's' ]]; then
+chmod a+x proxy8080.py && nohup python proxy8080.py > proxy8080.txt &
+fi
+
+
+if [[ "$port8799" = 's' ]]; then
+chmod a+x proxy8799.py && nohup python proxy8799.py > proxy8799.txt &
+fi
+
+
+if [[ "$port3128" = 's' ]]; then
+chmod a+x proxy3128.py && nohup python proxy3128.py > proxy3128.txt &
+fi
+
+echo -e "\033[1;32mTudo pronto! \n\nCanal: http://t.me/rdysoftware \033[0m"
